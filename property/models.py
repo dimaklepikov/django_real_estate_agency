@@ -50,15 +50,24 @@ class Flat(models.Model):
         default=timezone.now,
         db_index=True)
 
+    liked_by = models.ManyToManyField(User)
+
     def __str__(self):
         return f"{self.town}, {self.address} ({self.price}р.)"
 
 
 class Complaint(models.Model):
-    who_complained = models.ForeignKey(User,
-                                       on_delete=models.CASCADE,
-                                       verbose_name='Кто пожаловался')
-    flat_complained_about = models.ForeignKey(Flat,
-                                              on_delete=models.CASCADE,
-                                              verbose_name='Квартира, на которую пожаловались')
+    who_complained = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Кто пожаловался')
+
+    flat_complained_about = models.ForeignKey(
+        Flat,
+        on_delete=models.CASCADE,
+        verbose_name='Квартира, на которую пожаловались')
+
     complain_text = models.TextField('Текст жалобы', max_length=255)
+
+    def __str__(self):
+        return f"{self.who_complained}, {self.flat_complained_about} ({self.complain_text})"
