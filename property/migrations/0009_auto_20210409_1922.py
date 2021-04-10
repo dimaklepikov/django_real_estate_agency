@@ -7,20 +7,13 @@ import phonenumbers
 def add_pure_phone(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
     for flat in Flat.objects.all():
-        try:
-            phone = phonenumbers.parse(flat.owners_phonenumber, "RU")
-            pure_phone = phonenumbers.format_number(phone, phonenumbers.PhoneNumberFormat.E164)
-            valid_phone = phonenumbers.is_valid_number(pure_phone)
-            flat.owner_pure_phone = valid_phone
+        phone = phonenumbers.parse(flat.owners_phonenumber, "RU")
+        if phonenumbers.is_valid_number(phone):
+            flat.owner_pure_phone = phonenumbers.format_number(phone, phonenumbers.PhoneNumberFormat.E164)
             flat.save()
-        except AttributeError:
-            flat.owner_pure_phone = None
-
-
-def move_back(apps, schema_editor):
-    Flat = apps.get_model('property', 'Flat')
-    for flat in Flat.objects.all():
-        flat.owner_pure_phone = None
+        else:
+            flat.owner_pure_phone = 'Невалидный номер телефона'
+            flat.save()
 
 
 class Migration(migrations.Migration):
@@ -29,6 +22,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_pure_phone, move_back)
+        migrations.RunPython(add_pure_phone)
 
     ]
