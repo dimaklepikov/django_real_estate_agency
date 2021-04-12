@@ -7,7 +7,7 @@ import phonenumbers
 def add_pure_phone(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
     for flat in Flat.objects.all():
-        phone = phonenumbers.parse(flat.owners_phonenumber, "RU")
+        phone = phonenumbers.parse(flat.owners_phonenumber, 'RU')
         if phonenumbers.is_valid_number(phone):
             flat.owner_pure_phone = phonenumbers.format_number(phone, phonenumbers.PhoneNumberFormat.E164)
             flat.save()
