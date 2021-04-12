@@ -5,7 +5,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Flat(models.Model):
-    new_building = models.NullBooleanField("Новостройка")
+    new_building = models.NullBooleanField("Новостройка", db_index=True)
 
     description = models.TextField("Текст объявления", blank=True)
     price = models.IntegerField("Цена квартиры", db_index=True)
@@ -59,12 +59,16 @@ class Complaint(models.Model):
     who_complained = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Кто пожаловался')
+        verbose_name='Кто пожаловался',
+        db_index=True
+    )
 
     flat_complained_about = models.ForeignKey(
         Flat,
         on_delete=models.CASCADE,
-        verbose_name='Квартира, на которую пожаловались')
+        verbose_name='Квартира, на которую пожаловались',
+        db_index=True
+    )
 
     complain_text = models.TextField('Текст жалобы', max_length=255)
 
@@ -74,9 +78,18 @@ class Complaint(models.Model):
 
 class Owner(models.Model):
     name = models.CharField("ФИО владельца", max_length=200)
-    phone_number = models.CharField("Номер владельца", max_length=20)
-    pure_phone_number = PhoneNumberField('Нормализованный номер владельца', null=True, blank=True)
-    owned_flats = models.ManyToManyField(Flat, related_name='owned_by', verbose_name='Квартиры в собственности')
+    phone_number = models.CharField("Номер владельца",
+                                    max_length=20,
+                                    )
+    pure_phone_number = PhoneNumberField('Нормализованный номер владельца',
+                                         null=True,
+                                         blank=True,
+                                         )
+
+    owned_flats = models.ManyToManyField(Flat, related_name='owned_by',
+                                         verbose_name='Квартиры в собственности',
+                                         db_index=True
+                                         )
 
     def __str__(self):
         return f"{self.name}, {self.pure_phone_number}"
