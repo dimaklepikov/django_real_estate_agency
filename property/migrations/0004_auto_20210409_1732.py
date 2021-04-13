@@ -10,7 +10,7 @@ def set_new_buildings(apps, schema_editor):
             flat.new_building = True
             flat.save()
         else:
-            flat.new_building = True
+            flat.new_building = False
             flat.save()
 
 
